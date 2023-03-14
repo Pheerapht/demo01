@@ -1,30 +1,17 @@
-default:
-  interruptible: false
-  image: node:18.14.2
-  before_script:
-    - npm install
+name: Super-Linter
 
-stages:          # List of stages for jobs, and their order of execution
-  - build
-  - test
-  - deploy
+on: push
 
-build-job:       # This job runs in the build stage, which runs first.
-  stage: build
-  script:
-      - npm run build
-
-unit-test-job:   # This job runs in the test stage.
-  stage: test    # It only starts when the job in the build stage completes successfully.
-  script:
-    - npm run test
-
-deploy-job:      # This job runs in the deploy stage.
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  environment: production
-  script:
-    - npm run build
-    - npm install netlify-cli -g
-    - netlify deploy --prod --dir=./dist --site=$NETLIFY_SITE
-
-# asdawd
+jobs:
+  super-lint:
+    name: Lint code base
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.6.0
+      - name: Checkout code
+        uses: actions/checkout@v3.3.0
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
